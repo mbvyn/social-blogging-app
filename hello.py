@@ -1,21 +1,16 @@
-from flask import Flask, request, make_response, abort
+from flask import Flask, render_template
 
 app = Flask(__name__)
 
 
 @app.route('/')
 def index():
-    user_agent = request.headers.get('User-Agent')
-    message = '<p>Your browser is %s</p>' % user_agent
-
-    response = make_response(message)
-    response.set_cookie('answer', '42')
-    return response
+    return render_template('index.html')
 
 
 @app.route('/user/<name>')
 def user(name):
-    return '<h1>Hello, %s!</h1>' % name
+    return render_template('user.html', name=name)
 
 
 @app.route('/user/<int:id>')
