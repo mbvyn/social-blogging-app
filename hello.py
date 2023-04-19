@@ -1,12 +1,21 @@
 from flask import Flask, render_template
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
+from flask_wtf import Form
+from wtforms import StringField, SubmitField
+from wtforms.validators import InputRequired
 
 from datetime import datetime
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'the most secure encryption key'
 bootstrap = Bootstrap(app)
 moment = Moment(app)
+
+
+class NameForm(Form):
+    name = StringField('What is your name?', validators=[InputRequired()])
+    submit = SubmitField('Submit')
 
 
 @app.route('/')
