@@ -19,3 +19,7 @@ db.session.add_all([admin_role, mod_role, user_role, user_john, user_susan, user
 db.session.commit()
 
 print(user_john.id, user_john.username, user_john.role_id)
+
+admin_role.name = 'Administrator'
+db.session.add(admin_role)
+db.session.commit()
