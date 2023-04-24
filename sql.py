@@ -23,3 +23,8 @@ print(user_john.id, user_john.username, user_john.role_id)
 admin_role.name = 'Administrator'
 db.session.add(admin_role)
 db.session.commit()
+
+db.session.delete(mod_role)
+db.session.commit()
+
+
