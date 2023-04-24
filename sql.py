@@ -1,4 +1,4 @@
-from hello import Role, User, db, app
+from app.models import *
 
 app_ctx = app.app_context()
 app_ctx.push()
