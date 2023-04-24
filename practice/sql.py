@@ -1,4 +1,5 @@
 from app.models import *
+from hello import Role, db, User
 
 app_ctx = app.app_context()
 app_ctx.push()
