@@ -27,4 +27,7 @@ db.session.commit()
 db.session.delete(mod_role)
 db.session.commit()
 
+print(Role.query.all())
+print(User.query.filter_by(role=user_role).all())
+
 
