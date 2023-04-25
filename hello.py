@@ -7,6 +7,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
+from flask_script import Shell, Manager
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -18,8 +19,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = \
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 
 bootstrap = Bootstrap(app)
+manager = Manager(app)
 moment = Moment(app)
-
 db = SQLAlchemy(app)
 
 
@@ -47,6 +48,10 @@ class User(db.Model):
 class NameForm(FlaskForm):
     name = StringField('What is your name?', validators=[DataRequired()])
     submit = SubmitField('Submit')
+
+
+def make_shell_context():
+    return dict(app=app, db=db, User=User, Role=Role)
 
 
 @app.route('/', methods=['GET', 'POST'])
