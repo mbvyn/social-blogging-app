@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 import os.path
 
 from flask import Flask, render_template, session, redirect, url_for, flash
@@ -11,6 +12,8 @@ from flask_script import Shell, Manager
 from flask_migrate import Migrate
 from flask_mail import Mail
 
+load_dotenv()
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
@@ -22,8 +25,8 @@ app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_TLS'] = True
-app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 
 bootstrap = Bootstrap(app)
 manager = Manager(app)
@@ -31,6 +34,7 @@ moment = Moment(app)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 mail = Mail(app)
+
 
 class Role(db.Model):
     __tablename__ = 'roles'
