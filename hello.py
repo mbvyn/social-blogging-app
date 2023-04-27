@@ -1,3 +1,5 @@
+from threading import Thread
+
 from dotenv import load_dotenv
 import os.path
 
@@ -65,8 +67,14 @@ class NameForm(FlaskForm):
     submit = SubmitField('Submit')
 
 
+@app.shell_context_processor
 def make_shell_context():
     return dict(app=app, db=db, User=User, Role=Role)
+
+
+def send_async_email(app, msg):
+    with app.app_context():
+        mail.send(msg)
 
 
 def send_email(to, subject, template, **kwargs):
@@ -74,7 +82,11 @@ def send_email(to, subject, template, **kwargs):
                   sender=app.config['SB_MAIL_SENDER'], recipients=[to])
     msg.body = render_template(template + '.txt', **kwargs)
     msg.html = render_template(template + '.html', **kwargs)
-    mail.send(msg)
+
+    thr = Thread(target=send_async_email, args=[app, msg])
+    thr.start()
+
+    return thr
 
 
 @app.route('/', methods=['GET', 'POST'])
