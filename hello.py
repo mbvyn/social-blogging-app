@@ -10,7 +10,7 @@ from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
 from flask_script import Shell, Manager
 from flask_migrate import Migrate
-from flask_mail import Mail
+from flask_mail import Mail, Message
 
 load_dotenv()
 
@@ -24,9 +24,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = \
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
 app.config['MAIL_PORT'] = 587
-app.config['MAIL_TLS'] = True
+app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['SB_MAIL_SUBJECT_PREFIX'] = '[Social Blog]'
+app.config['SB_MAIL_SENDER'] = 'Social Blog Admin <sb@example.com>'
+app.config['SB_ADMIN'] = os.getenv('SB_ADMIN')
 
 bootstrap = Bootstrap(app)
 manager = Manager(app)
@@ -66,15 +69,26 @@ def make_shell_context():
     return dict(app=app, db=db, User=User, Role=Role)
 
 
+def send_email(to, subject, template, **kwargs):
+    msg = Message(app.config['SB_MAIL_SUBJECT_PREFIX'] + subject,
+                  sender=app.config['SB_MAIL_SENDER'], recipients=[to])
+    msg.body = render_template(template + '.txt', **kwargs)
+    msg.html = render_template(template + '.html', **kwargs)
+    mail.send(msg)
+
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     form = NameForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.name.data).first
+        user = User.query.filter_by(username=form.name.data).first()
         if user is None:
             user = User(username=form.name.data)
             db.session.add(user)
+            db.session.commit()
             session['known'] = False
+            if app.config['SB_ADMIN']:
+                send_email(app.config['SB_ADMIN'], 'New User', 'mail/new_user', user=user)
         else:
             session['known'] = True
         session['name'] = form.name.data
