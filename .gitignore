@@ -153,3 +153,4 @@ cython_debug/
 
 *.sqlite
 tests/_trial_temp/*
+practice
