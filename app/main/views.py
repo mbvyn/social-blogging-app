@@ -1,4 +1,5 @@
 from flask import render_template, session, redirect, url_for, current_app
+from flask_login import login_required
 from . import main
 from .forms import NameForm
 from .. import db
@@ -35,3 +36,9 @@ def user(name):
 @main.route('/user/<int:id>')
 def user_id(id):
     return '<h1>Hello, user your id is %s!</h1>' % id
+
+
+@main.route('/secret')
+@login_required
+def secret():
+    return 'Only authenticated users are allowed'
