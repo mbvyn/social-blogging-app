@@ -1,4 +1,4 @@
-from flask_login import UserMixin
+from flask_login import UserMixin, AnonymousUserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
 
@@ -151,8 +151,25 @@ class User(UserMixin, db.Model):
         db.session.add(self)
         return True
 
+    def can(self, perm):
+        return self.role is not None and self.role.has_permission(perm)
+
+    def is_administrator(self):
+        return self.can(Permission.ADMIN)
+
     def __repr__(self):
         return '<User %r>' % self.username
+
+
+class AnonymousUser(AnonymousUserMixin):
+    def can(self, permissions):
+        return False
+
+    def is_administrator(self):
+        return False
+
+
+login_manager.anonymous_user = AnonymousUser
 
 
 @login_manager.user_loader
