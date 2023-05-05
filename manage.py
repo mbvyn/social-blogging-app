@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import click
 from dotenv import load_dotenv
 import os
@@ -28,4 +27,3 @@ def test(test_names):
     else:
         tests = unittest.TestLoader().discover('tests')
     unittest.TextTestRunner(verbosity=2).run(tests)
-
