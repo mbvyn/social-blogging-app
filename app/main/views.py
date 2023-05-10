@@ -16,15 +16,20 @@ def index():
                     author=current_user._get_current_object())
         db.session.add(post)
         db.session.commit()
+
         return redirect(url_for('.index'))
+
     posts = Post.query.order_by(Post.timestamp.desc()).all()
+
     return render_template('index.html', form=form, posts=posts)
 
 
 @main.route('/user/<username>')
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
-    return render_template('user.html', user=user)
+    posts = user.posts.order_by(Post.timestamp.desc()).all()
+
+    return render_template('user.html', user=user, posts=posts)
 
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
@@ -38,10 +43,13 @@ def edit_profile():
         db.session.add(current_user._get_current_object())
         db.session.commit()
         flash('Your profile has been updated.')
+
         return redirect(url_for('.user', username=current_user.username))
+
     form.name.data = current_user.name
     form.location.data = current_user.location
     form.about_me.data = current_user.about_me
+
     return render_template('edit_profile.html', form=form)
 
 
@@ -62,7 +70,9 @@ def edit_profile_admin(id):
         db.session.add(user)
         db.session.commit()
         flash('The profile has been updated.')
+
         return redirect(url_for('.user', username=user.username))
+
     form.email.data = user.email
     form.username.data = user.username
     form.confirmed.data = user.confirmed
@@ -70,4 +80,5 @@ def edit_profile_admin(id):
     form.name.data = user.name
     form.location.data = user.location
     form.about_me.data = user.about_me
+
     return render_template('edit_profile.html', form=form, user=user)
