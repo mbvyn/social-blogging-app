@@ -1,5 +1,8 @@
 from datetime import datetime
 import hashlib
+from random import randint
+
+from faker import Faker
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
@@ -74,6 +77,18 @@ class Post(db.Model):
     body = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow())
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    @staticmethod
+    def generate_fake(count=100):
+        fake = Faker()
+        user_count = User.query.count()
+        for i in range(count):
+            u = User.query.offset(randint(0, user_count - 1)).first()
+            p = Post(body=fake.text(),
+                     timestamp=fake.past_date(),
+                     author=u)
+            db.session.add(p)
+        db.session.commit()
 
 
 class User(UserMixin, db.Model):
@@ -189,6 +204,26 @@ class User(UserMixin, db.Model):
         hash = self.avatar_hash or self.gravatar_hash()
         return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(
             url=url, hash=hash, size=size, default=default, rating=rating)
+
+    @staticmethod
+    def generate_fake(count=100):
+        fake = Faker()
+        i = 0
+        while i < count:
+            u = User(email=fake.email(),
+                     username=fake.user_name(),
+                     password='password',
+                     confirmed=True,
+                     name=fake.name(),
+                     location=fake.city(),
+                     about_me=fake.text(),
+                     member_since=fake.past_date())
+            db.session.add(u)
+            try:
+                db.session.commit()
+                i += 1
+            except IntegrityError:
+                db.session.rollback()
 
     def __repr__(self):
         return '<User %r>' % self.username
