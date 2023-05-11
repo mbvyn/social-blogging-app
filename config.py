@@ -11,7 +11,7 @@ class Config:
     SB_MAIL_SUBJECT_PREFIX = ['SB']
     SB_MAIL_SENDER = 'Social Blog Admin <sb@example.com>'
     SB_ADMIN = os.getenv('SB_ADMIN')
-
+    SB_POSTS_PER_PAGE = 20
     @staticmethod
     def init_app(app):
         pass
