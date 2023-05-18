@@ -14,6 +14,7 @@ class Config:
     SB_POSTS_PER_PAGE = 20
     SB_FOLLOWERS_PER_PAGE = 50
     SB_COMMENTS_PER_PAGE = 30
+
     @staticmethod
     def init_app(app):
         pass
@@ -34,6 +35,7 @@ class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = os.getenv('TEST_DATABASE_URL') or \
                               'sqlite:///' + os.path.join(basedir, 'data-test.sqlite')
+    WTF_CSRF_ENABLED = False
 
 
 class ProductionConfig(Config):
