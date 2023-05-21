@@ -8,12 +8,15 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config:
     SECRET_KEY = os.getenv('SECRET_KEY') or 'the most secure encryption key'
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_RECORD_QUERIES = True
     SB_MAIL_SUBJECT_PREFIX = ['SB']
     SB_MAIL_SENDER = 'Social Blog Admin <sb@example.com>'
     SB_ADMIN = os.getenv('SB_ADMIN')
     SB_POSTS_PER_PAGE = 20
     SB_FOLLOWERS_PER_PAGE = 50
     SB_COMMENTS_PER_PAGE = 30
+    SB_SLOW_DB_QUERY_TIME = 0.5
 
     @staticmethod
     def init_app(app):
